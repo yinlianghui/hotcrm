@@ -36,7 +36,7 @@ Source: `src/objects/opportunity.object.ts`
 
 Key fields:
 
-`name`, `crm_account`, `primary_contact`, `owner`, `amount`, `expected_revenue`, `stage`, `probability`, `close_date`, `created_date`, `type`, `lead_source`, `competitors`, `crm_campaign`, `days_in_stage`, `next_step`, `is_private`, `forecast_category`, `approval_status`, `approved_date`, `win_reason`, `loss_reason`, `loss_details`
+`name`, `crm_account`, `primary_contact`, `owner`, `amount`, `expected_revenue`, `stage`, `probability`, `close_date`, `created_date`, `type`, `lead_source`, `crm_competitors`, `crm_campaign`, `days_in_stage`, `next_step`, `is_private`, `forecast_category`, `approval_status`, `approved_date`, `win_reason`, `loss_reason`, `loss_details`
 
 ### `crm_opportunity_line_item` - Opportunity Line Item
 
@@ -53,6 +53,16 @@ Source: `src/objects/forecast.object.ts`
 Key fields:
 
 `owner`, `period`, `period_start`, `period_end`, `period_label`, `snapshot_date`, `quota`, `pipeline_amount`, `best_case_amount`, `commit_amount`, `closed_amount`, `expected_amount`, `attainment_pct`, `coverage_ratio`, `source`, `notes`
+
+### `crm_competitor` - Competitor
+
+Source: `src/objects/competitor.object.ts`
+
+Key fields:
+
+`name`, `website`, `main_products`, `threat_level`, `our_advantages`, `our_disadvantages`, `notes`, `owner`, `is_active`
+
+Opportunities reference competitors through the multi-value `crm_competitors` lookup.
 
 ## Service
 

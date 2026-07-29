@@ -12,7 +12,6 @@ flowchart TD
   Stack --> Objects["src/objects"]
   Stack --> Actions["src/actions"]
   Stack --> Flows["src/flows"]
-  Stack --> Agents["src/agents"]
   Stack --> Skills["src/skills"]
   Stack --> UI["src/apps, src/views, src/pages"]
   Stack --> Analytics["src/dashboards, src/reports, src/cubes"]
@@ -31,11 +30,11 @@ The stack manifest defines:
 | --- | --- |
 | id | `app.objectstack.hotcrm` |
 | namespace | `crm` |
-| version | `1.0.5` |
+| version | `2.2.2` |
 | type | `app` |
 | name | `HotCRM` |
 
-Runtime capabilities are declared in `requires`: `ai`, `automation`, `triggers`, `analytics`, `auth`, `ui`, `approvals`, and `sharing`.
+Runtime capabilities are declared in `requires`: `automation`, `triggers`, `analytics`, `auth`, `ui`, `approvals`, and `sharing`. The `ai` capability is deliberately **not** listed: under ObjectStack 16 it is a fail-fast requirement resolved to the closed-edition `@objectstack/service-ai` package, so declaring it would abort open-edition boots. The AI skill metadata still validates and builds into the artifact; see the comment block in [`objectstack.config.ts`](../objectstack.config.ts).
 
 ## Metadata Areas
 
@@ -45,11 +44,10 @@ Runtime capabilities are declared in `requires`: `ai`, `automation`, `triggers`,
 | Lifecycle hooks | `src/objects/*.hook.ts` via `src/hooks/index.ts` | `hooks` |
 | UI actions | `src/actions/*.actions.ts` | `actions` |
 | Automation | `src/flows/*.flow.ts` | `flows` |
-| AI agents | `src/agents/*.agent.ts` | `agents` |
 | AI skills | `src/skills/*.skill.ts` | `skills` |
 | Apps, views, pages | `src/apps/`, `src/views/`, `src/pages/` | `apps`, `views`, `pages` |
-| Analytics | `src/cubes/`, `src/dashboards/`, `src/reports/` | `analyticsCubes`, `dashboards`, `reports` |
-| Security | `src/profiles/`, `src/sharing/` | `permissions`, `sharingRules`, `roles` |
+| Analytics | `src/datasets/`, `src/cubes/`, `src/dashboards/`, `src/reports/` | `datasets`, `analyticsCubes`, `dashboards`, `reports` |
+| Security | `src/profiles/`, `src/sharing/` | `permissions`, `sharingRules`, `positions` |
 | i18n | `src/translations/` | `translations`, `i18n` |
 | Demo data | `src/data/` | `data` |
 
@@ -74,7 +72,7 @@ Current objects:
 
 | Domain | Objects |
 | --- | --- |
-| Sales | `crm_lead`, `crm_account`, `crm_contact`, `crm_opportunity`, `crm_opportunity_line_item`, `crm_forecast` |
+| Sales | `crm_lead`, `crm_account`, `crm_contact`, `crm_opportunity`, `crm_opportunity_line_item`, `crm_forecast`, `crm_competitor` |
 | Service | `crm_case`, `crm_knowledge_article`, `crm_task` |
 | Marketing | `crm_campaign`, `crm_campaign_member` |
 | Revenue | `crm_product`, `crm_quote`, `crm_quote_line_item`, `crm_contract` |
@@ -127,15 +125,14 @@ The UI is metadata-driven. Object field definitions, views, pages, actions, perm
 
 ## AI
 
-AI is modeled as ObjectStack metadata:
+AI is modeled as ObjectStack metadata. The AI surface is **skills-only** — the two former copilot agents were retired in favor of skills backed by real, registered actions:
 
 | Layer | Files | Examples |
 | --- | --- | --- |
-| Agents | `src/agents/*.agent.ts` | `sales_copilot`, `service_copilot` |
-| Skills | `src/skills/*.skill.ts` | `live_data`, `lead_qualification`, `email_drafting`, `revenue_forecasting`, `customer_360` |
+| Skills | `src/skills/*.skill.ts` | `live_data`, `lead_qualification`, `email_drafting`, `revenue_forecasting`, `customer_360`, `case_triage` |
 | Actions and flows | `src/actions/`, `src/flows/` | lead conversion, case triage, alerts |
 
-The Sales Copilot instructions explicitly require live schema inspection before answering record questions, because admins can change metadata over time.
+Skill instructions require live schema inspection before answering record questions, because admins can change metadata over time.
 
 ## Security
 
@@ -143,9 +140,9 @@ Security is assembled from:
 
 - permission profiles in `src/profiles/`
 - sharing rules in `src/sharing/`
-- role hierarchy in `src/sharing/role-hierarchy.ts`
+- flat positions in `src/sharing/positions.ts`
 
-The stack maps `RoleHierarchy.roles` into the ObjectStack `roles` field and registers sharing rules for accounts, opportunities, cases, and territory-style visibility.
+The stack registers `CrmPositions` as the ObjectStack `positions` field (ADR-0090 D3 — positions are flat capability-distribution groups; the v1 role hierarchy's parent links are gone) and registers sharing rules for accounts, opportunities, cases, and territory-style visibility.
 
 ## Verification
 

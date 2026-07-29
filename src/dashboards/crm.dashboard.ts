@@ -57,9 +57,6 @@ export const CrmOverviewDashboard: Dashboard = {
       type: 'metric',
       filter: { stage: 'closed_won' },
       colorVariant: 'success',
-      actionUrl: '/reports/revenue',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       dataset: 'opportunity_metrics', values: ['total_amount'],
       layout: { x: 0, y: 0, w: 3, h: 2 },
       options: {
@@ -74,9 +71,6 @@ export const CrmOverviewDashboard: Dashboard = {
       type: 'metric',
       filter: { stage: { $nin: ['closed_won', 'closed_lost'] } },
       colorVariant: 'blue',
-      actionUrl: '/objects/opportunity?filter=open',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       dataset: 'opportunity_metrics', values: ['opp_count'],
       layout: { x: 3, y: 0, w: 3, h: 2 },
       options: {
@@ -92,9 +86,6 @@ export const CrmOverviewDashboard: Dashboard = {
       type: 'metric',
       filter: { stage: 'closed_won' },
       colorVariant: 'purple',
-      actionUrl: '/reports/win-rate',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       dataset: 'opportunity_metrics', values: ['opp_count'],
       layout: { x: 6, y: 0, w: 3, h: 2 },
       options: {
@@ -110,9 +101,6 @@ export const CrmOverviewDashboard: Dashboard = {
       type: 'metric',
       filter: { stage: 'closed_won' },
       colorVariant: 'orange',
-      actionUrl: '/reports/avg-deal-size',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       dataset: 'opportunity_metrics', values: ['avg_amount'],
       layout: { x: 9, y: 0, w: 3, h: 2 },
       options: {
