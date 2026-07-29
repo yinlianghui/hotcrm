@@ -2,6 +2,7 @@
 
 import type { Hook, HookContext } from '@objectstack/spec/data';
 import type { HookApi } from './_hook-api';
+import { OpportunityCompetitorSeedLinks } from '../data/index';
 
 /**
  * Opportunity lifecycle hook.
@@ -169,4 +170,46 @@ const opportunityWonHook: Hook = {
 };
 
 
-export default [opportunityValidationHook, opportunityWonHook];
+/**
+ * Seed heal: re-inject the competitor links the seed loader drops.
+ *
+ * SeedLoaderService resolves natural keys only for STRING lookup values — an
+ * ARRAY (multi-value lookup like `crm_competitors`) trips its object-value
+ * guard and is silently deleted from every seeded write (objectstack#3911,
+ * still present in 17.0.0-rc.0). This hook restores the links on system
+ * writes (seed/backfill — no ctx.user, same signal as the freeze guard above)
+ * by resolving the intended competitor names from the seed-intent map. It
+ * no-ops when the record already carries links, so it neither overwrites user
+ * edits nor fights the platform once #3911 is fixed — at which point this
+ * hook and `OpportunityCompetitorSeedLinks` can be deleted.
+ */
+const opportunitySeedCompetitorHealHook: Hook = {
+  name: 'opportunity_seed_competitor_heal',
+  object: 'crm_opportunity',
+  events: ['beforeInsert', 'beforeUpdate'],
+  description: 'Re-inject seeded competitor links dropped by the seed loader (objectstack#3911).',
+  handler: async (ctx: HookContext) => {
+    if (ctx.user?.id) return; // user edits own this field; heal only seed/system writes
+    const input = ctx.input as Record<string, unknown>;
+    const previous = ctx.previous as Record<string, unknown> | undefined;
+    const name =
+      (typeof input.name === 'string' && input.name) ||
+      (typeof previous?.name === 'string' && (previous.name as string)) ||
+      undefined;
+    if (!name) return;
+    const wanted = OpportunityCompetitorSeedLinks[name];
+    if (!wanted || wanted.length === 0) return;
+    const current = input.crm_competitors ?? previous?.crm_competitors;
+    if (Array.isArray(current) && current.length > 0) return; // already linked
+    const api = ctx.api as HookApi | undefined;
+    if (!api) return;
+    // Small catalog — fetch once and match in JS rather than relying on
+    // driver-specific filter operators.
+    const competitors = await api.object('crm_competitor').find({ fields: ['id', 'name'], top: 100 });
+    const idByName = new Map(competitors.map((c) => [String(c.name), String(c.id)]));
+    const ids = wanted.map((n) => idByName.get(n)).filter((v): v is string => Boolean(v));
+    if (ids.length > 0) input.crm_competitors = ids;
+  },
+};
+
+export default [opportunityValidationHook, opportunityWonHook, opportunitySeedCompetitorHealHook];

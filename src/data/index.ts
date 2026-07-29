@@ -299,12 +299,14 @@ const leads = defineSeed(Lead, {
 // Seeded BEFORE opportunities: the opportunity seed references these by
 // name through the multi-value `crm_competitors` lookup.
 //
-// ⚠️ Platform gap: SeedLoaderService resolves natural keys only for STRING
-// lookup values — an ARRAY (multi-value lookup) trips its object-value guard
-// and the field is silently dropped from the write. The `crm_competitors`
-// arrays on the opportunity records below document intent and will start
-// resolving if the loader gains array support; until then, links must be
-// (re)applied after a demo:reset via the opportunity form or SQL.
+// ⚠️ Platform gap (objectstack#3911): SeedLoaderService resolves natural keys
+// only for STRING lookup values — an ARRAY (multi-value lookup) trips its
+// object-value guard and the field is silently dropped from the write. The
+// `crm_competitors` arrays on the opportunity records below are therefore
+// re-injected at write time by the `opportunity_seed_competitor_heal` hook
+// (see opportunity.hook.ts), which reads `OpportunityCompetitorSeedLinks`
+// exported at the bottom of the opportunity seed. Once #3911 ships and this
+// app upgrades past it, the hook + map become no-ops and can be deleted.
 const competitors = defineSeed(Competitor, {
   mode: 'upsert',
   externalId: 'name',
@@ -361,6 +363,33 @@ const competitors = defineSeed(Competitor, {
       notes: '存量替换型商机的主要对手；决策链偏好"用熟不用生"。',
       is_active: true,
     },
+    {
+      name: 'NovaSuite',
+      website: 'https://novasuite.example.com',
+      main_products: 'NovaSuite AI CRM（对话式销售工作台）、NovaFlow（流程自动化）、Nova Insights（预测分析）',
+      threat_level: 'high',
+      our_advantages: `- **元数据开放**：全栈可自持部署，对方是封闭 SaaS，出海/合规客户过不了数据审查
+- 企业级审批/共享/权限模型完整，对方权限模型只有粗粒度角色
+- 数据模型可深度定制，对方是固定对象 + 标签的浅定制`,
+      our_disadvantages: `- 对方"对话即操作"的 AI 演示噱头拉满，POC 首因效应强
+- 融资凶猛、补贴定价，成交价常被压到我方报价的 6 折
+- 产品迭代周更，我方季更，功能对比表上总有"新玩意"`,
+      notes: '2025 年底起频繁出现在中大型新购竞标；赢我们的单多靠激进折扣加 AI 演示效果，交付后续约率存疑。',
+      is_active: true,
+    },
+    {
+      name: 'FieldPro CRM',
+      website: 'https://fieldpro.example.com',
+      main_products: 'FieldPro 现场服务 CRM、工单调度、设备台账模块',
+      threat_level: 'medium',
+      our_advantages: `- 通用平台可配置出垂直场景，客户不被锁死在单一行业形态
+- 报表/预测/审批全栈完整，对方分析能力只有基础报表
+- 多语言多币种开箱即用，对方仅有英文版`,
+      our_disadvantages: `- 制造业客户里对方有成熟行业模板和实施伙伴网络
+- 设备台账/工单调度的深度功能我们需要二次开发`,
+      notes: '主要在制造业商机相遇（如 Globex）；决策人常拿它的行业模板要求我们对标。',
+      is_active: true,
+    },
   ],
 });
 
@@ -380,7 +409,7 @@ const opportunities = defineSeed(Opportunity, {
       forecast_category: 'pipeline',
       lead_source: 'web',
       days_in_stage: 12,
-      crm_competitors: ['SalesForge', 'HubNexus'],
+      crm_competitors: ['SalesForge', 'HubNexus', 'NovaSuite'],
       description: `Upgrade from Standard to Enterprise edition for the
 NA + EMEA teams. Drivers: (1) AI agent governance becomes a hard
 requirement after their internal compliance review, (2) advanced
@@ -398,7 +427,7 @@ analytics seats for the Ops org, (3) priority support SLA.`,
       forecast_category: 'pipeline',
       lead_source: 'referral',
       days_in_stage: 45,
-      crm_competitors: ['SalesForge', 'LegacySoft CRM'],
+      crm_competitors: ['SalesForge', 'LegacySoft CRM', 'FieldPro CRM'],
     },
     {
       name: 'Wayne Enterprise License',
@@ -554,6 +583,17 @@ analytics seats for the Ops org, (3) priority support SLA.`,
     })(),
   ]
 });
+
+// Seed-intent view of the multi-value competitor links above. The seed loader
+// drops array natural keys (objectstack#3911), so the
+// `opportunity_seed_competitor_heal` hook re-injects them at write time from
+// this map. Delete the map + hook once #3911 ships and this app upgrades.
+export const OpportunityCompetitorSeedLinks: Record<string, string[]> =
+  Object.fromEntries(
+    ((opportunities.records ?? []) as Array<Record<string, unknown>>)
+      .filter((r) => Array.isArray(r.crm_competitors) && (r.crm_competitors as unknown[]).length > 0)
+      .map((r) => [String(r.name), (r.crm_competitors as string[]).slice()]),
+  );
 
 // ─── Products ─────────────────────────────────────────────────────────
 const products = defineSeed(Product, {
