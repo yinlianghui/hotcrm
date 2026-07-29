@@ -2,6 +2,46 @@
 
 All notable changes to HotCRM are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); HotCRM follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Changes merged since 2.2.2 that have not yet shipped in a versioned release.
+
+### Added
+
+- **Competitor management module** ([#3](https://github.com/objectstack-ai/hotcrm/issues/3)). New `crm_competitor` object (threat level with colored badges, win/loss battlecards in Markdown, product and intel-owner fields), two list views (all + high-threat), a Sales nav entry, seed data, and full en/zh-CN/ja-JP/es-ES translations. Opportunities now reference competitors through the multi-value `crm_competitors` lookup, replacing the hard-coded "Competitor A/B/C" multiselect options.
+- **Contract status kanban view** ([#2](https://github.com/objectstack-ai/hotcrm/issues/2)). New `contract_board` kanban grouped by status (draft → in-approval → activated → expired → terminated); cards show contract number, account, and end date with status-colored badges, and column headers summarize `contract_value`. The original table view remains available.
+- **Per-rep work queues** ([#485](https://github.com/objectstack-ai/hotcrm/pull/485)) plus a fix for "My Open Deals" opening on losses.
+- **Entry points for every shipped capability and a complete Chinese sidebar** ([#482](https://github.com/objectstack-ai/hotcrm/pull/482)).
+- **P1 CPQ & intake capabilities, lookup/global search fixes, and runtime hook tests** ([#468](https://github.com/objectstack-ai/hotcrm/pull/468)).
+- **Flow runtime test harnesses** executing `lead_conversion` and `quote_generation` through the real engine ([#469](https://github.com/objectstack-ai/hotcrm/pull/469), [#470](https://github.com/objectstack-ai/hotcrm/pull/470)).
+
+### Changed
+
+- **ObjectStack platform → 16.1.0** (from `16.0.0-rc.1`) across all `@objectstack/*` packages, with business-flow, action, and permission defect repairs verified by browser E2E ([#465](https://github.com/objectstack-ai/hotcrm/pull/465)).
+
+### Fixed
+
+- **Global `dateRange` no longer narrows widgets that declare their own time windows** ([#1](https://github.com/objectstack-ai/hotcrm/issues/1)). Widgets titled YTD / last-12-months / QTD carried their own `close_date` filters, but the dashboard-level `dateRange` (default `this_quarter`) was injected on top and silently intersected them — Executive YTD revenue showed the quarter total instead of the year total. Added `filterBindings: { dateRange: false }` opt-outs across 4 dashboards (8 widgets) plus a metadata guard test.
+- **i18n: re-keyed dead option/section/widget translations and added missing zh-CN coverage** ([#498](https://github.com/objectstack-ai/hotcrm/pull/498)).
+- **P0 core-correctness: lead-conversion dedupe, real notify recipients, opportunity amount rollup** ([#467](https://github.com/objectstack-ai/hotcrm/pull/467)).
+- **`lead_auto_assign` no longer breaks anonymous Web-to-Lead** ([#471](https://github.com/objectstack-ai/hotcrm/pull/471)).
+- **Removed `console.*` from hook catch blocks** — the L2 sandbox has no console ([#472](https://github.com/objectstack-ai/hotcrm/pull/472)).
+- **Repaired dangling UI references, inverted priority queues, and put the day's work first** ([#480](https://github.com/objectstack-ai/hotcrm/pull/480)).
+- **Demo org made demonstrable: owned records, honest dates, filled fields** ([#481](https://github.com/objectstack-ai/hotcrm/pull/481)).
+- **StackBlitz demo boot fixes**: bootstrap under npm instead of a global pnpm install ([#484](https://github.com/objectstack-ai/hotcrm/pull/484)), disable the OIDC provider so the demo can log in ([#486](https://github.com/objectstack-ai/hotcrm/pull/486)), pnpm 10 bootstrap in the WebContainer start command ([#464](https://github.com/objectstack-ai/hotcrm/pull/464)).
+
+### Removed
+
+- **Dead dashboard widget action buttons** (#496). All 16 widget-level `actionUrl`/`actionType`/`actionIcon` declarations across the four dashboards pointed at routes that don't exist — reports never registered in this stack (`/reports/revenue-ytd`, `/reports/win-rate`, `/reports/avg-deal-size`, `/reports/closed-won`, `/reports/resolution-time`, `/reports/revenue`) and object routes missing the `crm_` prefix (`/objects/account`, `/objects/opportunity?...`, `/objects/case?...`). `pnpm validate` flagged every one as a dead route (ADR-0049 dashboard action references); each rendered as a button that navigated nowhere. Removed, following the same call made for the dead dashboard *header* actions in 2.2.0 — re-add real, wired-up targets when those reports/routes exist. Validation now passes with zero warnings.
+- **Dead `src/interfaces/` directory** (#496). Its only file was an empty barrel (a lone copyright header) imported by nothing.
+- **Stale changeset `.changeset/no-hardcoded-currency-format.md`** (#496). The change it describes shipped in 2.2.0 ([#437](https://github.com/objectstack-ai/hotcrm/pull/437)); its content is now backfilled into that release's notes below.
+
+### Docs / CI
+
+- README hero rewrite as the reference app for AI-written enterprise software, drifted counts fixed, token-size framing ([#463](https://github.com/objectstack-ai/hotcrm/pull/463), [#466](https://github.com/objectstack-ai/hotcrm/pull/466), [#483](https://github.com/objectstack-ai/hotcrm/pull/483)).
+- Docs/metadata drift sweep (#496): README counts and version badge re-synced to `pnpm validate` (16 objects / 20 flows / 13 actions / 12 positions, v2.2.2), `docs/STATUS.md` regenerated (was reporting v1.0.5 counts, Node >=20, ObjectStack ^7.7.0), `docs/ARCHITECTURE.md` re-synced (manifest version, `requires` without `ai`, `crm_competitor`, flat positions instead of the retired `role-hierarchy.ts`, analytics datasets), `docs/RELEASE_STRATEGY.md` current version, and `docs/developers/api_reference.md` gained the `crm_competitor` object (opportunity field is `crm_competitors`). Stale `objectstack.config.ts` comment pointing at a non-existent flow file corrected.
+- CI: bump `actions/setup-node` 4 → 6 ([#421](https://github.com/objectstack-ai/hotcrm/pull/421)) and `actions/checkout` 4 → 7 ([#422](https://github.com/objectstack-ai/hotcrm/pull/422)).
+
 ## [2.2.2] — 2026-07-21
 
 Patch before the ObjectStack 16 marketplace release. Fixes [#459](https://github.com/objectstack-ai/hotcrm/issues/459) — the highest-severity issue from the v2.2.1 QA dogfood.
@@ -36,6 +76,7 @@ Upgrade migration was driven from the official release notes at <https://objects
 
 ### Fixed
 
+- **Money display formats no longer hard-code a `$` symbol** ([#437](https://github.com/objectstack-ai/hotcrm/pull/437)). Currency measures and table/axis columns used the numeral format `'$0,0'`, which baked a literal `$` into every rendered amount regardless of the actual currency. All money formats are now plain `'0,0'` across the opportunity/account/product datasets and the executive/sales/crm dashboards, so amounts render as plain numbers unless a currency is actually configured. *(Shipped in this release but recorded late — backfilled from the pending changeset.)*
 - **Dashboard date-range picker no longer crashes widgets on objects without the date field.** ObjectStack 15 (framework#2501, `GlobalFilterSchema.name` + `DashboardWidgetSchema.filterBindings`) wired dashboard-level filters — including the built-in `dateRange` picker (reserved filter name `dateRange`) — into **every widget's analytics query**. At 14.7 the picker didn't propagate; under 16 it injects its `field` into each widget's SQL. The Executive and CRM dashboards bind `dateRange` to `close_date`, which only exists on `crm_opportunity` — so every widget on `crm_account` / `crm_contact` / `crm_lead` / `crm_product` failed with `SqliteError: no such column: close_date` and rendered as an error card. Each affected widget now declares `filterBindings: { dateRange: false }` to opt out of the picker (they carry their own `created_at` / count semantics): 5 widgets on [executive.dashboard.ts](src/dashboards/executive.dashboard.ts) (`total_accounts`, `total_contacts`, `open_leads`, `new_accounts_by_month`, `accounts_by_industry`) and 1 on [crm.dashboard.ts](src/dashboards/crm.dashboard.ts) (`top_products`). The Sales dashboard (all-`opportunity_metrics`) and Service dashboard (`dateRange` bound to `created_date`, which `crm_case` has) needed no change. Browser-verified: all four dashboards load with live data and zero analytics/SQL errors. (This surfaces only when the dashboards are actually rendered against seeded data — `verify` builds the artifact but never queries it.)
 
 ### Removed

@@ -1,6 +1,6 @@
 # HotCRM Docs
 
-> Last reviewed: June 4, 2026
+> Last reviewed: July 29, 2026
 > Scope: internal engineering, release, and operational documentation for this repository.
 
 HotCRM also has product-facing documentation under [`content/docs/`](../content/docs/). Use that tree for user, admin, and marketplace docs. Use this `docs/` tree for implementation notes, current technical status, deployment, release, and developer reference.

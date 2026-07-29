@@ -71,9 +71,6 @@ export const ExecutiveDashboard: Dashboard = {
       // (default this_quarter) is ANDed in and the tile shows quarter revenue.
       filterBindings: { dateRange: false },
       colorVariant: 'success',
-      actionUrl: '/reports/revenue-ytd',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       dataset: 'opportunity_metrics', values: ['total_amount'],
       layout: { x: 0, y: 0, w: 3, h: 2 },
       options: {
@@ -88,9 +85,6 @@ export const ExecutiveDashboard: Dashboard = {
       type: 'metric',
       filter: { is_active: true },
       colorVariant: 'blue',
-      actionUrl: '/objects/account',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       // crm_account has neither `close_date` nor `lead_source`; opt this widget
       // out of both dashboard filters bound to those fields. ObjectStack 15
       // (framework#2501) injects every dashboard filter (dateRange + globalFilters)
@@ -112,9 +106,6 @@ export const ExecutiveDashboard: Dashboard = {
       description: 'People in our address book',
       type: 'metric',
       colorVariant: 'purple',
-      actionUrl: '/objects/contact',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       filterBindings: { dateRange: false }, // crm_contact has no close_date — opt out of the date picker
       dataset: 'contact_metrics', values: ['contact_count'],
       layout: { x: 6, y: 0, w: 3, h: 2 },
@@ -131,9 +122,6 @@ export const ExecutiveDashboard: Dashboard = {
       type: 'metric',
       filter: { is_converted: false },
       colorVariant: 'orange',
-      actionUrl: '/objects/lead',
-      actionType: 'url',
-      actionIcon: 'ArrowUpRight',
       filterBindings: { dateRange: false }, // crm_lead has no close_date — opt out of the date picker
       dataset: 'lead_metrics', values: ['lead_count'],
       layout: { x: 9, y: 0, w: 3, h: 2 },
