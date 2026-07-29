@@ -902,6 +902,7 @@ export const zhCN: TranslationData = {
         nav_opportunity: { label: '商机' },
         nav_pipeline: { label: '销售管道' },
         nav_competitor: { label: '竞争对手' },
+        nav_war_room: { label: '竞对作战室' },
         nav_quote: { label: '报价' },
         nav_contract: { label: '合同' },
         nav_sales_dashboard: { label: '销售业绩' },

@@ -50,6 +50,10 @@ export const CrmApp = App.create({
         // Competitive intel — the battlecard catalog opportunities link to
         // via the multi-value `crm_competitors` lookup.
         { id: 'nav_competitor',  type: 'object', objectName: 'crm_competitor',  label: 'Competitors',   icon: 'swords' },
+        // Threat-ranked battlecard command center over the same catalog —
+        // the react page aggregates contested pipeline per competitor,
+        // which no list view can compose (ADR-0081).
+        { id: 'nav_war_room',    type: 'page', pageName: 'competitor_war_room', label: 'War Room',      icon: 'radar' },
         { id: 'nav_quote',       type: 'object', objectName: 'crm_quote',       label: 'Quotes',        icon: 'receipt' },
         // Contracts close the sales cycle: quote → signed agreement → renewal.
         // The object, its views and its renewal automation all shipped, but
