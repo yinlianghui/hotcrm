@@ -37,6 +37,10 @@ export const SalesManagerProfile = {
     // quote. Rows derive from the opportunity / quote (controlled_by_parent).
     crm_opportunity_line_item: { allowCreate: true, allowRead: true, allowEdit: true, allowDelete: true, viewAllRecords: false, modifyAllRecords: false },
     crm_quote_line_item:       { allowCreate: true, allowRead: true, allowEdit: true, allowDelete: true, viewAllRecords: false, modifyAllRecords: false },
+    // Installed base (REQ-0002). Read-only, org-wide: what an account already
+    // owns — and how much of it is falling out of warranty — is renewal and
+    // upsell context. Maintaining it belongs to service.
+    crm_asset:                 { allowCreate: false, allowRead: true, allowEdit: false, allowDelete: false, viewAllRecords: true, modifyAllRecords: false },
   },
   fields: {
     // Sensitive fields a manager must see in full. Authored explicitly rather

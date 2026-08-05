@@ -12,3 +12,5 @@ export { ForecastViews } from './forecast.view';
 export { KnowledgeArticleViews } from './knowledge_article.view';
 export { ProductViews } from './product.view';
 export { QuoteViews } from './quote.view';
+export { AssetViews } from './asset.view';
+export { WorkOrderViews } from './work_order.view';

@@ -32,6 +32,15 @@ export const ServiceAgentProfile = {
     // object had no grant at all — the "Knowledge" nav item was denied for
     // everyone, including the agents it was built for.
     crm_knowledge_article: { allowCreate: true, allowRead: true, allowEdit: true, allowDelete: false, viewAllRecords: true, modifyAllRecords: false },
+    // Field service (REQ-0002). This profile covers the desk AND dispatch: the
+    // agent who takes the repair call is the one who raises the work order and
+    // sends an engineer. Dispatching means editing a job somebody else owns, so
+    // `crm_work_order` carries org-wide view AND modify — unlike the agent's own
+    // case queue above, which stays owner-scoped. Assets are the installed base
+    // the agent looks up while the customer is still on the phone; they read it
+    // and correct it, but the record's commercial owner is the account team.
+    crm_asset:      { allowCreate: true, allowRead: true, allowEdit: true, allowDelete: false, viewAllRecords: true, modifyAllRecords: false, allowExport: true },
+    crm_work_order: { allowCreate: true, allowRead: true, allowEdit: true, allowDelete: false, viewAllRecords: true, modifyAllRecords: true, allowExport: true },
   },
   fields: {
     'crm_case.is_sla_violated':        { readable: true, editable: false },

@@ -11,6 +11,7 @@ import * as salesSeed from '../src/data/sales.seed';
 import * as serviceSeed from '../src/data/service.seed';
 import * as marketingSeed from '../src/data/marketing.seed';
 import * as revenueSeed from '../src/data/revenue.seed';
+import * as fieldServiceSeed from '../src/data/field-service.seed';
 
 /**
  * The territory rules must match REAL seeded accounts (#638).
@@ -223,6 +224,7 @@ describe('every family module dataset is wired into CrmSeedData (#635 split)', (
     'service.seed': serviceSeed,
     'marketing.seed': marketingSeed,
     'revenue.seed': revenueSeed,
+    'field-service.seed': fieldServiceSeed,
   };
 
   const isDataset = (value: unknown): value is Dataset =>

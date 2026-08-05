@@ -17,3 +17,4 @@ export { MarkPrimaryContactAction, SendEmailAction } from './contact.actions';
 export { LogCallAction, LogMeetingAction } from './global.actions';
 export { ConvertLeadAction, CreateCampaignAction, ScheduleFollowUpAction } from './lead.actions';
 export { CloneOpportunityAction, MassUpdateStageAction, GenerateQuoteAction } from './opportunity.actions';
+export { CreateWorkOrderAction, CompleteWorkOrderAction } from './work_order.actions';

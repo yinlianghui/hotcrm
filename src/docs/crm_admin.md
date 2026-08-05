@@ -120,6 +120,11 @@ revisits:
 | CSAT request delay after close | **1 day** | `case-csat-followup.flow.ts` |
 | Contract renewal reminder | each contract's **Renewal Notice Days**, swept daily **08:00** | `contract-renewal.flow.ts` |
 | Contract auto-expiration | past **end date**, swept daily **00:00** | `contract-expiration.flow.ts` |
+| Work-order response SLA | **4 hours** (Critical) → **8** / **24** / **72** hours | `work_order.hook.ts` |
+| Work-order response breach sweep | **hourly** | `work-order-sla-monitor.flow.ts` |
+| Field CSAT request delay after completion | **1 day** | `work-order-csat-followup.flow.ts` |
+| Asset warranty expiry sweep | daily **01:00** | `asset-warranty-expiry.flow.ts` |
+| Default factory warranty from install date | **12 months** | `asset.hook.ts` |
 
 > Object names, fields, and relationships are visible directly in **Studio** and
 > on each record's detail page — they are intentionally **not** duplicated here.

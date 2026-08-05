@@ -60,13 +60,24 @@ const SHARING_DOC = 'content/docs/administration/sharing-and-security.mdx';
  * business decision #549 asks for; it belongs in a PR that also updates the
  * admin docs and the sharing rules, not in a drive-by edit here.
  */
-const ACCOUNT_CHILD_COVERAGE: Record<string, 'derived' | 'own_only' | 'partial'> = {
+const ACCOUNT_CHILD_COVERAGE: Record<
+  string,
+  'derived' | 'own_only' | 'partial' | 'org_read' | 'persona_wide'
+> = {
   crm_contact: 'derived',
   crm_opportunity: 'partial',
   crm_case: 'partial',
   crm_quote: 'own_only',
   crm_contract: 'own_only',
   crm_task: 'own_only',
+  // Field service (REQ-0002). Two categories the sales children never needed:
+  //   'org_read'     — public_read OWD: the installed base is shared reference
+  //                    data, so the related list is complete for everyone.
+  //   'persona_wide' — private OWD with NO sharing rule, but the service
+  //                    personas' permission sets grant org-wide view (Layer 1),
+  //                    so their reach comes from the grant, not from sharing.
+  crm_asset: 'org_read',
+  crm_work_order: 'persona_wide',
 };
 
 /**
@@ -110,8 +121,16 @@ describe('what a shared account carries into its related lists', () => {
       if (!objectByName.has(name)) continue;
       const owd = owdOf(name);
       const rules = rulesOn(name);
+      const PERSONA_SETS = ['sales_rep', 'service_agent', 'field_engineer'];
+      const personaWide = permissionSets.some(
+        (ps) => PERSONA_SETS.includes(ps.name) && (ps.objects ?? {})[name]?.viewAllRecords === true,
+      );
       const actual =
-        owd === 'controlled_by_parent' ? 'derived' : rules.length > 0 ? 'partial' : 'own_only';
+        owd === 'controlled_by_parent' ? 'derived'
+        : owd === 'public_read' || owd === 'public_read_write' ? 'org_read'
+        : rules.length > 0 ? 'partial'
+        : personaWide ? 'persona_wide'
+        : 'own_only';
       if (actual !== expected) {
         bad.push(
           `${name}: ledger says '${expected}', metadata says '${actual}' ` +

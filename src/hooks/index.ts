@@ -12,6 +12,7 @@
 import type { Hook } from '@objectstack/spec/data';
 
 import accountHook from '../objects/account.hook';
+import assetHook from '../objects/asset.hook';
 import campaignHook from '../objects/campaign.hook';
 import caseHook from '../objects/case.hook';
 import contactHook from '../objects/contact.hook';
@@ -25,9 +26,11 @@ import productHook from '../objects/product.hook';
 import quoteHook from '../objects/quote.hook';
 import quoteLineItemHook from '../objects/quote_line_item.hook';
 import taskHook from '../objects/task.hook';
+import workOrderHook from '../objects/work_order.hook';
 
 const entries: Array<Hook | Hook[]> = [
   accountHook,
+  assetHook,
   campaignHook,
   caseHook,
   contactHook,
@@ -41,6 +44,7 @@ const entries: Array<Hook | Hook[]> = [
   quoteHook,
   quoteLineItemHook,
   taskHook,
+  workOrderHook,
 ];
 
 /** Flat list of every CRM lifecycle hook (each `*.hook.ts` may export one or many). */

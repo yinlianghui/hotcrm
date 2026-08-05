@@ -1,0 +1,179 @@
+---
+title: Field Service
+description: Installed assets, on-site work orders, engineer dispatch, warranty-driven billing and the post-visit call-back.
+---
+
+# Field Service
+
+A **case** is a conversation. Some repairs need somebody to physically show up —
+that is a **work order**: one engineer, one site, one appointment.
+
+Field Service adds two records to HotCRM and one board to work them from:
+
+| Record | What it is |
+| --- | --- |
+| 🖥️ **Asset** | A unit of equipment installed at a customer site — which customer, which address, which model, which serial number, and when its warranty ends. |
+| 🔧 **Work Order** | A visit to that unit — who goes, when, what they did, who signed for it, and whether it is chargeable. |
+
+## Assets — your installed base
+
+Products in the catalogue are **models**. An asset is a **machine**: the actual
+unit sitting on a customer's factory floor.
+
+| Field | Why it matters |
+| --- | --- |
+| **Account** / **Site Contact** | Who owns it, and who to call before an engineer arrives |
+| **Product / Model**, **Serial Number** | What it is — the serial is what a customer reads out over the phone, so it is searchable from the global search box |
+| **Site Address** / **Site Location** | Where the engineer actually drives to; the location also drives the **Map** view |
+| **Install Date** | When it went in |
+| **Warranty Start / End** | The coverage window — this is what decides whether a visit is free |
+| **Under Warranty** | Kept current for you (see below) |
+| **Service Contract** | Extended coverage beyond the factory warranty |
+
+### The warranty shortcut
+
+Record an install date and leave the warranty dates blank, and HotCRM fills in a
+**12-month** factory warranty starting from the install date. Override either
+date whenever the real coverage differs.
+
+A daily sweep clears the **Under Warranty** flag on assets whose coverage has
+lapsed, and notifies the asset owner — so a warranty running out never goes
+unnoticed just because nobody happened to open the record.
+
+### Asset views
+
+- **Fleet Status** — every unit grouped by state: installed, under repair,
+  suspended, decommissioned.
+- **Map** — where the machines physically are.
+- **Warranty Expiry Calendar** — expiries laid out by date, so renewal
+  conversations happen before the coverage lapses, not after.
+- **Out of Warranty** — the chargeable installed base.
+- **Under Repair** — what is down right now.
+
+## Work orders
+
+### Raising one from a case
+
+The support desk takes the call. On any open case, **Create Work Order** carries
+the account, the contact and the reported problem onto a new work order and
+links the two records. The agent supplies only what the case cannot know: the
+**work type** and the **field priority**.
+
+The case then moves to *Waiting on Support* — it stays open until the visit
+lands, so the caller is never stranded.
+
+### Response promises
+
+Every work order gets a **Response Due** deadline the moment it is saved:
+
+| Priority | Response promised within |
+| --- | --- |
+| 🔴 **Critical** | 4 hours |
+| 🟠 **High** | 8 hours |
+| 🟡 **Medium** | 24 hours (same day) |
+| ⚪ **Low** | 72 hours |
+
+- Escalating a job to a higher priority **pulls its deadline in** from the
+  moment of the escalation.
+- A deadline you type in by hand always wins — use it when you have promised the
+  customer a specific time.
+- The promise is that somebody **responds**, not that the repair is finished:
+  the clock stops the moment the work order leaves *New*.
+
+An **hourly** sweep flags any unfinished work order whose deadline passed with
+nobody responding, and alerts the **service supervisor** — the work order's
+owner. The sweep never rewrites the job's status; scheduling stays the
+dispatcher's call.
+
+### The 8 work-order statuses
+
+| Status | What it means |
+| --- | --- |
+| ⚪ **New** | Raised, nobody assigned yet *(default)* |
+| 🔵 **Scheduled** | An appointment window exists |
+| 🟣 **Dispatched** | An engineer is on the way |
+| 🟠 **In Progress** | Work is happening on site |
+| 🟡 **On Hold** | Blocked — waiting on a part, or on the customer |
+| 🟢 **Completed** | The visit is done and signed for |
+| 🟢 **Closed** | Billing and the call-back are done too |
+| ⚫ **Cancelled** | Not going ahead |
+
+A work order stays on the open queues while it is *Completed* — it still owes a
+charge and a satisfaction rating.
+
+## Dispatch
+
+Assign a **Field Engineer** and a **Scheduled Start / End**, and the visit shows
+up on two boards:
+
+- **Dispatch Calendar** — every scheduled visit, coloured by urgency. This is
+  what dispatch works from.
+- **Engineer Schedule** — the same visits as one lane *per engineer*, which is
+  what answers "who is free on Thursday, and how many calls does this person
+  already have that day".
+
+Schedule someone into a window that overlaps one of their own visits and the
+work order is flagged **Schedule Conflict**. It is a warning, not a block —
+dispatch sometimes stacks two jobs on one industrial park deliberately.
+
+Two queues make the board workable:
+
+- **Awaiting Dispatch** — nobody assigned yet, urgent first.
+- **Response at Risk** — open, unanswered, soonest deadline first.
+
+## Free or chargeable — settled before you dispatch
+
+When a work order names an asset, HotCRM reads that asset's warranty **on save**
+and stamps the work order with:
+
+- **Warranty Status** — *Under Warranty*, *Out of Warranty*, or *Unknown*
+- **Billable Visit** — checked whenever the asset is out of warranty
+
+Because it happens on save, the charge is visible on the record *before* anyone
+is sent — which is the point. The **Billable Visits** queue lists every
+chargeable job so nothing goes out without the customer being told.
+
+Once a work order is closed or cancelled, its billing decision is **frozen**: a
+warranty expiring later cannot rewrite the terms of a job that already happened.
+
+## Completing the visit
+
+**Complete Visit** on the work order collects everything from one form:
+
+| What | Required? |
+| --- | --- |
+| **Work Performed** | Yes — a completion without it is rejected |
+| **Accepted By** (the name of the person at the site) | Yes |
+| **Parts Used**, **Labor Hours**, **Service Charge** | Optional |
+
+The customer's drawn **signature** is captured on the record's **Completion**
+tab. Completing without one records a warning rather than blocking an engineer
+whose tablet is offline or whose customer refuses the pad.
+
+## The call-back
+
+One day after a visit is **Completed**, HotCRM prompts the supervisor to call
+the site and log a **satisfaction rating** — the same loop cases already use,
+run on the visit instead of the ticket.
+
+## Who can do what
+
+| Role | Assets | Work orders |
+| --- | --- | --- |
+| **Service Agent** (desk + dispatch) | Read and maintain | Raise, dispatch and edit any job |
+| **Field Engineer** | Read, and correct what they find wrong on site | See the whole board; edit only the jobs assigned to them. Billing fields are read-only, and dispatch notes are hidden. |
+| **Sales Rep / Sales Manager** | Read-only — what a customer already owns is renewal context | No access |
+| **System Administrator** | Full control | Full control |
+
+## Not included
+
+Deliberately out of scope for now, and tracked on the requirement record:
+
+- **Automatic engineer selection** — skill matching, route optimisation and
+  travel-time-aware scheduling. Dispatch is manual, on a calendar.
+- **Multi-visit jobs and multi-engineer crews** — a work order models one visit.
+- **Parts inventory** — parts are recorded as text on the completion log; stock
+  is not consumed against the product catalogue.
+- **Chat-channel intake** (for example a WeChat group bot) — the work order
+  records *Chat / IM* as a channel, but connecting a specific messaging platform
+  is a customer-specific extension, not part of the standard product.

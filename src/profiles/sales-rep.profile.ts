@@ -57,6 +57,11 @@ export const SalesRepProfile = {
     // Which campaign sourced a lead — read-only context, derived from the
     // campaign (controlled_by_parent). Enrollment belongs to marketing_user.
     crm_campaign_member:       { allowCreate: false, allowRead: true, allowEdit: false, allowDelete: false, viewAllRecords: false, modifyAllRecords: false },
+    // What the customer already owns (REQ-0002). Read-only, org-wide: knowing
+    // an account runs six of our machines and two are out of warranty is a
+    // sales conversation, not a service one — but the installed base is
+    // maintained by service, so a rep never writes it.
+    crm_asset:                 { allowCreate: false, allowRead: true, allowEdit: false, allowDelete: false, viewAllRecords: true, modifyAllRecords: false },
   },
   fields: {
     'crm_account.annual_revenue':     { readable: true, editable: false },

@@ -117,6 +117,25 @@ export const CrmApp = App.create({
     },
 
     {
+      // Field service (REQ-0002). Its own group rather than more entries under
+      // Service: the desk and the field are different jobs done by different
+      // people. The desk works a queue of conversations; dispatch works a
+      // calendar of visits, and the calendar is the first thing they open.
+      id: 'group_field_service',
+      type: 'group',
+      label: 'Field Service',
+      icon: 'wrench',
+      expanded: true,
+      children: [
+        { id: 'nav_work_order',       type: 'object', objectName: 'crm_work_order', label: 'Work Orders', icon: 'clipboard-list' },
+        { id: 'nav_dispatch',         type: 'object', objectName: 'crm_work_order', viewName: 'dispatch_calendar', label: 'Dispatch Board', icon: 'calendar-clock' },
+        { id: 'nav_engineer_schedule', type: 'object', objectName: 'crm_work_order', viewName: 'engineer_schedule', label: 'Engineer Schedule', icon: 'users' },
+        { id: 'nav_asset',            type: 'object', objectName: 'crm_asset',      label: 'Assets', icon: 'hard-drive' },
+        { id: 'nav_field_service_dashboard', type: 'dashboard', dashboardName: 'field_service_dashboard', label: 'Field Service Overview', icon: 'gauge' },
+      ],
+    },
+
+    {
       id: 'group_insights',
       type: 'group',
       label: 'Insights',

@@ -251,6 +251,30 @@ const CASES: Record<string, WriteCase> = {
     ],
   },
 
+  'work_order_side_effects — work starting on site puts the machine into repair': {
+    hook: 'work_order_side_effects',
+    event: 'afterUpdate',
+    input: { id: 'wo_1', status: 'in_progress', crm_asset: 'ast_1', crm_account: 'acc_1' },
+    previous: { id: 'wo_1', status: 'dispatched', crm_asset: 'ast_1', crm_account: 'acc_1' },
+    seed: { crm_asset: [{ id: 'ast_1', status: 'installed' }] },
+    writes: [{ object: 'crm_asset', id: 'ast_1', doc: { status: 'in_repair' } }],
+  },
+
+  'work_order_side_effects — completion rolls onto the asset and the account': {
+    hook: 'work_order_side_effects',
+    event: 'afterUpdate',
+    input: { id: 'wo_1', status: 'completed', crm_asset: 'ast_1', crm_account: 'acc_1' },
+    previous: { id: 'wo_1', status: 'in_progress', crm_asset: 'ast_1', crm_account: 'acc_1' },
+    seed: {
+      crm_asset: [{ id: 'ast_1', status: 'in_repair' }],
+      crm_account: [{ id: 'acc_1' }],
+    },
+    writes: [
+      { object: 'crm_asset', id: 'ast_1', doc: { last_service_date: today, status: 'installed' } },
+      { object: 'crm_account', id: 'acc_1', doc: { last_activity_date: today } },
+    ],
+  },
+
   'task_activity_bubble — the activity bubble on the parent record': {
     hook: 'task_activity_bubble',
     event: 'afterUpdate',

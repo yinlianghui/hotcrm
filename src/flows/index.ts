@@ -28,6 +28,12 @@ export { ContactWelcomeFlow } from './contact-welcome.flow';
 export { OpportunityWonAlertFlow } from './opportunity-won-alert.flow';
 export { TaskUrgentAlertFlow } from './task-urgent-alert.flow';
 export { TaskDueReminderFlow } from './task-due-reminder.flow';
+// Field service (REQ-0002)
+export { CreateWorkOrderFlow } from './create-work-order.flow';
+export { CompleteWorkOrderFlow } from './work-order-completion.flow';
+export { WorkOrderSlaMonitorFlow } from './work-order-sla-monitor.flow';
+export { WorkOrderCsatFollowupFlow } from './work-order-csat-followup.flow';
+export { AssetWarrantyExpiryFlow } from './asset-warranty-expiry.flow';
 
 import { CampaignEnrollmentFlow } from './campaign-enrollment.flow';
 import { CaseEscalationFlow, CaseEscalationOnCreateFlow } from './case-escalation.flow';
@@ -50,6 +56,11 @@ import { ContactWelcomeFlow } from './contact-welcome.flow';
 import { OpportunityWonAlertFlow } from './opportunity-won-alert.flow';
 import { TaskUrgentAlertFlow } from './task-urgent-alert.flow';
 import { TaskDueReminderFlow } from './task-due-reminder.flow';
+import { CreateWorkOrderFlow } from './create-work-order.flow';
+import { CompleteWorkOrderFlow } from './work-order-completion.flow';
+import { WorkOrderSlaMonitorFlow } from './work-order-sla-monitor.flow';
+import { WorkOrderCsatFollowupFlow } from './work-order-csat-followup.flow';
+import { AssetWarrantyExpiryFlow } from './asset-warranty-expiry.flow';
 
 /** All flow definitions as a typed array for defineStack() */
 export const allFlows: Flow[] = [
@@ -80,4 +91,10 @@ export const allFlows: Flow[] = [
   OpportunityWonAlertFlow,
   TaskUrgentAlertFlow,
   TaskDueReminderFlow,
+  // Field service (REQ-0002)
+  CreateWorkOrderFlow,
+  CompleteWorkOrderFlow,
+  WorkOrderSlaMonitorFlow,
+  WorkOrderCsatFollowupFlow,
+  AssetWarrantyExpiryFlow,
 ];

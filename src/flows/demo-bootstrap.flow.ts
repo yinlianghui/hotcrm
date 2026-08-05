@@ -115,8 +115,19 @@ const CLAIM_FIELDS: Record<OwnershipColumn, string> = {
 /**
  * One find + loop + stamp-owner pass over an object, selecting the rows that
  * are ownerless in `column` and stamping BOTH ownership columns on each.
+ *
+ * `extraFields` covers objects where "ownerless" is not the only unassigned
+ * column: a seeded work order also has no `assigned_engineer`, and without one
+ * the dispatch calendar and the engineer-schedule timeline come up empty — the
+ * same class of failure this whole flow exists to prevent.
  */
-const claim = (key: string, objectName: string, label: string, column: OwnershipColumn) => ({
+const claim = (
+  key: string,
+  objectName: string,
+  label: string,
+  column: OwnershipColumn,
+  extraFields: Record<string, string> = {},
+) => ({
   find: {
     id: `find_${key}`,
     type: 'get_record' as const,
@@ -144,7 +155,7 @@ const claim = (key: string, objectName: string, label: string, column: Ownership
             config: {
               objectName,
               filter: { id: `{current_${key}.id}` },
-              fields: { ...CLAIM_FIELDS },
+              fields: { ...CLAIM_FIELDS, ...extraFields },
             },
           },
         ],
@@ -162,8 +173,15 @@ const claim = (key: string, objectName: string, label: string, column: Ownership
  * quote_expiration notifies address a null owner and reach nobody (the exact
  * failure this flow exists to fix), and `crm_contract` additionally becomes
  * uneditable for everyone (#622).
+ *
+ * Assets and work orders (REQ-0002): assets need an owner so the
+ * warranty-expiry notification reaches someone; work orders need one so the
+ * response-SLA breach alert does, and an `assigned_engineer` so the dispatch
+ * calendar and engineer-schedule timeline have lanes to draw.
  */
-const CLAIMED_OBJECTS: ReadonlyArray<[key: string, objectName: string, label: string]> = [
+const CLAIMED_OBJECTS: ReadonlyArray<
+  [key: string, objectName: string, label: string, extraFields?: Record<string, string>]
+> = [
   ['leads', 'crm_lead', 'Leads'],
   ['accounts', 'crm_account', 'Accounts'],
   ['contacts', 'crm_contact', 'Contacts'],
@@ -172,6 +190,8 @@ const CLAIMED_OBJECTS: ReadonlyArray<[key: string, objectName: string, label: st
   ['tasks', 'crm_task', 'Tasks'],
   ['quotes', 'crm_quote', 'Quotes'],
   ['contracts', 'crm_contract', 'Contracts'],
+  ['assets', 'crm_asset', 'Assets'],
+  ['work_orders', 'crm_work_order', 'Work Orders', { assigned_engineer: '{firstUser.id}' }],
 ];
 
 /**
@@ -181,7 +201,9 @@ const CLAIMED_OBJECTS: ReadonlyArray<[key: string, objectName: string, label: st
  * has genuinely half-claimed rows left to repair.
  */
 const TARGETS = OWNERSHIP_COLUMNS.flatMap((column) =>
-  CLAIMED_OBJECTS.map(([key, objectName, label]) => claim(`${key}_by_${column}`, objectName, label, column)),
+  CLAIMED_OBJECTS.map(([key, objectName, label, extraFields]) =>
+    claim(`${key}_by_${column}`, objectName, label, column, extraFields),
+  ),
 );
 
 /**

@@ -20,12 +20,14 @@
  *   - `service.seed.ts` tasks, cases, knowledge articles
  *   - `marketing.seed.ts` campaigns, campaign members
  *   - `revenue.seed.ts` contracts, quotes, quote lines, forecasts
+ *   - `field-service.seed.ts` assets, work orders
  */
 import { products } from './catalog.seed';
 import { accounts, contacts, leads, opportunities, opportunityLineItems } from './sales.seed';
 import { tasks, cases, knowledgeArticles } from './service.seed';
 import { campaigns, campaignMembersFromLeads, campaignMembersFromContacts } from './marketing.seed';
 import { contracts, quotes, quoteLineItems, forecasts } from './revenue.seed';
+import { assets, workOrders } from './field-service.seed';
 
 /**
  * Ownership and CRM positions are NOT seeded here — they can't be.
@@ -72,4 +74,7 @@ export const CrmSeedData = [
   quoteLineItems,
   forecasts,
   knowledgeArticles,
+  // Field service (REQ-0002)
+  assets,
+  workOrders,
 ];

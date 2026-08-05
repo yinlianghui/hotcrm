@@ -33,6 +33,8 @@ const RUNTIME_TEST_FILES = [
   'hooks-runtime.test.ts',
   'hooks-runtime-sales.test.ts',
   'hooks-runtime-service.test.ts',
+  'hooks-runtime-field-service.test.ts',
+  'flow-field-service.test.ts',
   'flow-conversion.test.ts',
   'flow-quote.test.ts',
   'flow-followup.test.ts',

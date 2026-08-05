@@ -95,3 +95,4 @@ metadata goes (core `src/` for B, an overlay package for C) before writing any
 | ID | Title | Source | Disposition | Status |
 | --- | --- | --- | --- | --- |
 | [0001](0001-agency-tier-lead-tagging.md) | Auto-tag leads by agency-tier hierarchy | Example customer | C customer-overlay | Triaged |
+| [0002](0002-field-service-work-orders.md) | Field service — installed base, dispatch, on-site work orders | After-sales lead, equipment vendor | B standard-enhancement | Shipped |

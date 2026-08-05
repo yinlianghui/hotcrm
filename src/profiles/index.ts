@@ -24,8 +24,8 @@
  *   a list view declaring `exportOptions`, or a report whose dataset is
  *   built on it.
  *
- * That union is exactly `crm_account`, `crm_case`, `crm_contact`, `crm_lead`,
- * `crm_opportunity` today. Adding `exportOptions` to a view (or a report over
+ * That union is exactly `crm_account`, `crm_asset`, `crm_case`, `crm_contact`,
+ * `crm_lead`, `crm_opportunity`, `crm_work_order` today. Adding `exportOptions` to a view (or a report over
  * a new dataset) means adding the matching grant here in the same change — the
  * guard fails otherwise, which is the point: a surface nobody can use is the
  * failure this axis exists to make loud instead of silent.
@@ -39,6 +39,7 @@
  * `guest` anchors at all — granting it there would both hand anonymous
  * visitors bulk table egress and make the set unbindable.
  */
+export { FieldEngineerProfile } from './field-engineer.profile';
 export { GuestPortalProfile } from './guest-portal.profile';
 export { MarketingUserProfile } from './marketing-user.profile';
 export { SalesManagerProfile } from './sales-manager.profile';

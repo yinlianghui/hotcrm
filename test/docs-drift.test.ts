@@ -30,6 +30,13 @@ import { REPO_ROOT } from './helpers/repo-root';
 // anything.
 const FLOWS = (f: string) => readFileSync(join(REPO_ROOT, 'src/flows', f), 'utf8');
 const DOC = (f: string) => readFileSync(join(REPO_ROOT, 'src/docs', f), 'utf8');
+/**
+ * Some documented business rules live in a HOOK, not a flow — the field-service
+ * response-time promise and the default warranty term are both computed on save
+ * (REQ-0002). They are exactly as documented, and exactly as prone to drifting,
+ * as the flow thresholds above, so they are pinned the same way.
+ */
+const HOOKS = (f: string) => readFileSync(join(REPO_ROOT, 'src/objects', f), 'utf8');
 
 /** cron → the human label the docs use. Unknown cron ⇒ deliberate failure. */
 const CRON_LABEL: Record<string, string> = {
@@ -52,6 +59,13 @@ type Rule = {
 
 const cap = (file: string, re: RegExp): string => {
   const m = FLOWS(file).match(re);
+  if (!m) throw new Error(`drift test out of date: pattern ${re} not found in ${file}`);
+  return m[1];
+};
+
+/** `cap`, for a rule whose source of truth is a hook rather than a flow. */
+const capHook = (file: string, re: RegExp): string => {
+  const m = HOOKS(file).match(re);
   if (!m) throw new Error(`drift test out of date: pattern ${re} not found in ${file}`);
   return m[1];
 };
@@ -137,6 +151,40 @@ const RULES: Rule[] = [
     extract: () => cap('contract-expiration.flow.ts', /schedule: '([^']+)'/),
     display: cronDisplay,
     docs: ['crm_admin.md'],
+  },
+  // ─── Field service (REQ-0002) ───────────────────────────────────────
+  {
+    label: 'work-order response breach sweep schedule',
+    extract: () => cap('work-order-sla-monitor.flow.ts', /schedule: '([^']+)'/),
+    display: cronDisplay,
+    docs: ['crm_service.md', 'crm_admin.md'],
+  },
+  {
+    label: 'asset warranty expiry sweep schedule',
+    extract: () => cap('asset-warranty-expiry.flow.ts', /schedule: '([^']+)'/),
+    display: cronDisplay,
+    docs: ['crm_service.md', 'crm_admin.md'],
+  },
+  {
+    // The number the customer actually negotiated on ("紧急的必须 4 小时内有人
+    // 响应"). It lives in the hook's RESPONSE_HOURS map.
+    label: 'critical work-order response hours',
+    extract: () => capHook('work_order.hook.ts', /critical: (\d+),/),
+    display: (v) => [`**${v} hours**`, `**${v}** hours`],
+    docs: ['crm_service.md', 'crm_admin.md'],
+  },
+  {
+    label: 'medium work-order response hours (same day)',
+    extract: () => capHook('work_order.hook.ts', /medium: (\d+),/),
+    display: (v) => [`**${v} hours**`, `**${v}**`],
+    docs: ['crm_service.md'],
+  },
+  {
+    label: 'default factory warranty (years from install)',
+    extract: () => capHook('asset.hook.ts', /DEFAULT_WARRANTY_YEARS = (\d+)/),
+    // Authored in years, documented in the months a service manager thinks in.
+    display: (v) => [`**${Number(v) * 12}-month**`, `**${Number(v) * 12} months**`],
+    docs: ['crm_service.md', 'crm_admin.md'],
   },
 ];
 
